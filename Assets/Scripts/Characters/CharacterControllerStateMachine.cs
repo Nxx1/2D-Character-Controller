@@ -5,8 +5,11 @@ using UnityEngine;
 public class CharacterControllerStateMachine : FSM
 {
     private IdleState _idleState;
-    private MoveState _moveState;
+    private RunState _runState;
     private JumpState _jumpState;
+    private GlideState _glideState;
+    private AttackState _attackState;
+    private JumpAttackState _jumpAttackState;
 
     public float characterSpeed;
     public float jumpForce;
@@ -17,20 +20,49 @@ public class CharacterControllerStateMachine : FSM
     private Transform _transform;
 
     private bool _grounded;
+    private bool _isAttack;
 
     private void Awake()
     {
-        _idleState = new IdleState(this);
-        _moveState = new MoveState(this);
-        _jumpState = new JumpState(this);
+        this._idleState = new IdleState(this);
+        this._runState = new RunState(this);
+        this._jumpState = new JumpState(this);
+        this._glideState = new GlideState(this);
+        this._attackState = new AttackState(this);
+        this._jumpAttackState = new JumpAttackState(this);
+
         this._transform = GetComponent<Transform>();
         this._animator = GetComponent<Animator>();
         this._rigidbody2D = GetComponent<Rigidbody2D>();
+
+        this._isAttack = false;
     }
 
     protected override BaseState InitialState()
     {
         return idleState;
+    }
+
+    public AttackState attackState {
+        get {
+            return this._attackState;
+        }
+    }
+
+    public GlideState glideState
+    {
+        get
+        {
+            return this._glideState;
+        }
+    }
+
+    public JumpAttackState jumpAttackState
+    {
+        get
+        {
+            return this._jumpAttackState;
+        }
     }
 
     public IdleState idleState
@@ -41,11 +73,11 @@ public class CharacterControllerStateMachine : FSM
         }
     }
 
-    public MoveState moveState
+    public RunState runState
     {
         get
         {
-            return this._moveState;
+            return this._runState;
         }
     }
 
@@ -77,6 +109,18 @@ public class CharacterControllerStateMachine : FSM
         set
         {
             this._animator = animator;
+        }
+    }
+
+    public bool isAttack
+    {
+        get
+        {
+            return _isAttack;
+        }
+        set
+        {
+            this._isAttack = isAttack;
         }
     }
 

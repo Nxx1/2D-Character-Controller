@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveState : GroundState
+public class GlideState : AirState
 {
-    public MoveState(CharacterControllerStateMachine characterControllerStateMachine) : base("Move", characterControllerStateMachine)
+    public GlideState(CharacterControllerStateMachine characterControllerStateMachine) : base("Glide", characterControllerStateMachine)
     {
-        
+
     }
 
     public override void EnterState()
@@ -17,15 +17,14 @@ public class MoveState : GroundState
     public override void UpdateLogic()
     {
         base.UpdateLogic();
-        if (Mathf.Abs(_inputHorizontal) < Mathf.Epsilon  && _characterControllerStateMachine.Grounded)
-        {
-            _fsm.ChangeState(_characterControllerStateMachine.idleState);
-        }
+
+        _inputHorizontal = Input.GetAxis("Horizontal");
 
         if (Mathf.Abs(_inputHorizontal) < Mathf.Epsilon && !_characterControllerStateMachine.Grounded)
         {
             _fsm.ChangeState(_characterControllerStateMachine.jumpState);
         }
+
 
     }
 
@@ -41,12 +40,8 @@ public class MoveState : GroundState
     public override void UpdateAnimation()
     {
         base.UpdateAnimation();
-        if (_characterControllerStateMachine.Grounded)
-        {
-            _characterControllerStateMachine.animator.SetBool("Run", true);
-        } else {
-            _characterControllerStateMachine.animator.SetBool("Run", false);
-        }
+        
+        _characterControllerStateMachine.animator.SetBool("Run", false);
 
         //Flip Character
         if (_inputHorizontal > 0.01f)
@@ -59,6 +54,4 @@ public class MoveState : GroundState
         }
 
     }
-
-
 }

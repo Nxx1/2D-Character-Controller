@@ -5,7 +5,7 @@ using UnityEngine;
 public class GroundState : BaseState
 {
     protected CharacterControllerStateMachine _characterControllerStateMachine;
-    protected bool grounded;
+    protected float _inputHorizontal;
     public GroundState(string name, CharacterControllerStateMachine characterControllerStateMachine) : base(name, characterControllerStateMachine)
     {
         _characterControllerStateMachine = characterControllerStateMachine;
@@ -15,28 +15,41 @@ public class GroundState : BaseState
     {
         base.EnterState();
 
+        _inputHorizontal = 0f;
     }
 
     public override void UpdateLogic()
     {
         base.UpdateLogic();
-        if (Input.GetKeyDown(KeyCode.Space) && grounded) {
+
+        if (!_characterControllerStateMachine.Grounded)
+        {
+            _fsm.ChangeState(_characterControllerStateMachine.jumpState);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && _characterControllerStateMachine.Grounded)
+        {
             _characterControllerStateMachine.ChangeState(_characterControllerStateMachine.jumpState);
         }
+
+        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.E) && _characterControllerStateMachine.Grounded)
+        {
+            _characterControllerStateMachine.isAttack = true;
+            _characterControllerStateMachine.ChangeState(_characterControllerStateMachine.attackState);
+        }
+        
     }
 
     public override void UpdatePhysics()
     {
         base.UpdatePhysics();
-
-        grounded = _characterControllerStateMachine.Grounded;
     }
 
     public override void UpdateAnimation()
     {
         base.UpdateAnimation();
 
-        _characterControllerStateMachine.animator.SetBool("Ground", grounded);
+        _characterControllerStateMachine.animator.SetBool("Ground", _characterControllerStateMachine.Grounded);
     }
 
 }

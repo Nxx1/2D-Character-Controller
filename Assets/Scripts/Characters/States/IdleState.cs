@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class IdleState : GroundState
 {
-    private float _inputHorizontal;
     public IdleState(CharacterControllerStateMachine characterControllerStateMachine) : base("Idle", characterControllerStateMachine)
     {
         
@@ -13,23 +12,22 @@ public class IdleState : GroundState
     public override void EnterState()
     {
         base.EnterState();
-        _inputHorizontal = 0f;
     }
 
     public override void UpdateLogic()
     {
         base.UpdateLogic();
-        _inputHorizontal = Input.GetAxis("Horizontal");
-        if (Mathf.Abs(_inputHorizontal) > Mathf.Epsilon)
-        {
-           _fsm.ChangeState(_characterControllerStateMachine.moveState);
-        }
 
+        _inputHorizontal = Input.GetAxis("Horizontal");
+        if (Mathf.Abs(_inputHorizontal) > Mathf.Epsilon && _characterControllerStateMachine.Grounded)
+        {
+            _fsm.ChangeState(_characterControllerStateMachine.runState);
+        }
     }
 
     public override void UpdateAnimation()
     {
         base.UpdateAnimation();
-        _characterControllerStateMachine.animator.SetBool("Run", _inputHorizontal != 0);
+        _characterControllerStateMachine.animator.SetBool("Run", false);
     }
 }
